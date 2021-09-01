@@ -20,6 +20,9 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		self.client.get(from: url) { clientResult in
+			if case .failure(_) = clientResult {
+				completion(.failure(Error.connectivity))
+			}
 		}
 	}
 }
