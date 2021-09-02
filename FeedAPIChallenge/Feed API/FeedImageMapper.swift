@@ -15,7 +15,7 @@ final class FeedImageMapper {
 	}
 
 	// MARK: - JsonFeedImageModel
-	struct JsonFeedImageModel: Decodable {
+	private struct JsonFeedImageModel: Decodable {
 		let imageId: UUID
 		let imageDescription: String?
 		let imageLocation: String?
@@ -34,18 +34,18 @@ final class FeedImageMapper {
 	}
 
 	static func map(_ data: Data, _ response: HTTPURLResponse) throws -> [FeedImage] {
-		guard response.OK_200 else {
+		guard response.isOK,
+		      let root = try? JSONDecoder().decode(Root.self, from: data) else {
 			throw RemoteFeedLoader.Error.invalidData
 		}
 
-		let root = try JSONDecoder().decode(Root.self, from: data)
 		return root.items.map { $0.feedImage }
 	}
 }
 
 // MARK: - HTTPURLResponse
 extension HTTPURLResponse {
-	var OK_200: Bool {
+	var isOK: Bool {
 		return self.statusCode == 200
 	}
 }
