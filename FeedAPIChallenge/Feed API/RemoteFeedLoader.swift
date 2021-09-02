@@ -24,12 +24,8 @@ public final class RemoteFeedLoader: FeedLoader {
 			guard self != nil else { return }
 
 			switch clientResult {
-			case .success((let data, let response)):
-				if let feedImages = try? FeedImageMapper.map(data, response) {
-					completion(.success(feedImages))
-				} else {
-					completion(.failure(Error.invalidData))
-				}
+			case let .success((data, response)):
+				completion(Result { try FeedImageMapper.map(data, response) })
 			case .failure:
 				completion(.failure(Error.connectivity))
 			}
